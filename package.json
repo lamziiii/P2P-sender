@@ -1,6 +1,8 @@
 {
   "name": "p2p",
   "private": true,
+  "description": "Secure P2P file sharing application using Hyperswarm",
+  "author": "lamzii",
   "version": "0.0.0",
   "type": "module",
   "main": "dist-electron/main.js",
@@ -30,11 +32,12 @@
       "icon": "public/icon.png"
     },
     "linux": {
-      "target": "AppImage",
-      "icon": "public/icon.png"
+      "target": ["AppImage"],
+      "icon": "public/icon.png",
+      "category": "Utility"
     },
     "mac": {
-      "target": "dmg",
+      "target": ["dmg", "zip"],
       "icon": "public/icon.icns",
       "category": "public.app-category.utilities"
     }
