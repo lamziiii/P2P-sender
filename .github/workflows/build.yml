@@ -50,3 +50,38 @@ jobs:
             release/*.deb
             release/*.rpm
           if-no-files-found: warn
+
+  publish:
+    needs: release
+    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+          merge-multiple: true
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ./artifacts/**/*
+          name: "P2PShare Release"
+          body: |
+            ## 🎉 Nouvelle version disponible !
+            
+            Cette release contient les exécutables pour Windows, macOS et Linux.
+            
+            ### 🛠️ Changements
+            - Build automatisé des binaires.
+            - Améliorations de l'interface et de la performance.
+            
+            ### 📦 Fichiers inclus
+            - **Windows** : .exe (Installeur)
+            - **macOS** : .dmg / .zip
+            - **Linux** : .AppImage
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
