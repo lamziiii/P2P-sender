@@ -1,73 +1,65 @@
-# React + TypeScript + Vite
+# 🔗 P2P Share - Cross-platform Peer-to-Peer File Transfer & Chat
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+P2P Share is a modern, privacy-focused desktop application built with **Electron**, **React**, and **TypeScript**. It enables direct peer-to-peer file sharing and chat without intermediate servers, using **Hyperswarm** for discovery and **PeerJS** for secure WebRTC data channels.
 
-Currently, two official plugins are available:
+![P2P Share UI](public/icon.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ✨ Features
 
-## React Compiler
+- 💬 **Private P2P Chat**: End-to-end encrypted real-time messaging.
+- 📁 **Direct File Transfer**: Send any file size directly to your friends with high speed.
+- 👥 **Friend System**: Add friends using their unique P2P IDs and see their online status.
+- 📊 **Real-time Monitoring**: Track transfer progress, speed (MB/s), and connection status.
+- 🌓 **Theming**: Beautiful glassmorphism UI with native Light and Dark mode support.
+- ⚙️ **Automatic Startup**: Option to launch automatically with Windows.
+- 🛡️ **Privacy First**: No central server stores your messages or files.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🚀 Getting Started
 
-## Expanding the ESLint configuration
+### Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Installation
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/lamziiii/P2P-sender.git
+   cd P2P-sender
+   ```
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+
+### Building for Production
+
+To create a distributed executable for your platform (Windows, macOS, or Linux):
+
+```bash
+npm run dist
 ```
+The output will be located in the `release/` directory.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🛠️ Built With
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **Frontend**: [React 19](https://react.dev/), [Vite](https://vitejs.dev/)
+- **Desktop**: [Electron](https://www.electronjs.org/)
+- **P2P Networking**: [Hyperswarm](https://github.com/holepunchto/hyperswarm), [PeerJS](https://peerjs.com/)
+- **Style**: Vanilla CSS with Glassmorphism
+- **Languages**: TypeScript, HTML, CSS
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+Built with ❤️ by [lamziiii](https://github.com/lamziiii)
