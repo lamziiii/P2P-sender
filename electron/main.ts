@@ -8,6 +8,20 @@ import Hyperswarm from 'hyperswarm';
 let window: BrowserWindow | null = null;
 let tray: Tray | null = null;
 
+// Single Instance Lock
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    if (window) {
+      if (window.isMinimized()) window.restore();
+      if (!window.isVisible()) window.show();
+      window.focus();
+    }
+  });
+}
+
 // Storage Setup
 const userDataPath = app.getPath('userData');
 const friendsFile = path.join(userDataPath, 'friends.json');
@@ -476,8 +490,11 @@ const __dirname = path.dirname(__filename);
 
 
 // Hide the dock icon on Mac since this is a tray app
+// Hide the dock icon on Mac since this is a tray app
+// Note: We will show it temporarily when the window is visible if needed, 
+// but for now we follow the tray-first design.
 if (process.platform === 'darwin') {
-  app.dock?.hide();
+  // app.dock?.hide(); // Commented out to improve visibility on Mac
 }
 
 const createWindow = () => {
@@ -489,7 +506,7 @@ const createWindow = () => {
   window = new BrowserWindow({
     width: 380,
     height: 600,
-    show: false,
+    show: true, // Changed to true to fix "not seeing anything" issue
     frame: false,
     resizable: false,
     transparent: true,
@@ -585,6 +602,14 @@ app.whenReady().then(() => {
   }
   createWindow();
   createTray();
+});
+
+app.on('activate', () => {
+  if (window === null) {
+    createWindow();
+  } else {
+    window.show();
+  }
 });
 
 app.on('window-all-closed', () => {
