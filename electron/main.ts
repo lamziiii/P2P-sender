@@ -48,7 +48,7 @@ const saveConfig = () => fs.writeFileSync(configFile, JSON.stringify(config));
 // Generate ID
 let myId = '';
 if (fs.existsSync(idFile)) {
-  myId = fs.readFileSync(idFile, 'utf8');
+  myId = fs.readFileSync(idFile, 'utf8').trim();
 } else {
   myId = crypto.randomBytes(16).toString('hex');
   fs.writeFileSync(idFile, myId);
@@ -79,7 +79,7 @@ const saveMessages = () => fs.writeFileSync(messagesFile, JSON.stringify(message
 // --- Chat Swarm ---
 // topic = sorted(myId, friendId) so both peers join the same rendezvous point
 const getChatTopic = (a: string, b: string) =>
-  crypto.createHash('sha256').update([a, b].sort().join(':')).digest();
+  crypto.createHash('sha256').update([a.trim(), b.trim()].sort().join(':')).digest();
 
 const chatSwarm = new Hyperswarm();
 const joinedChatTopics = new Set<string>();
@@ -89,6 +89,7 @@ const joinChatWithFriend = (friendId: string) => {
   if (joinedChatTopics.has(key)) return;
   joinedChatTopics.add(key);
   chatSwarm.join(getChatTopic(myId, friendId), { server: true, client: true });
+  chatSwarm.flush(); // Force discovery to start immediately
 };
 
 // Join topics for already-known friends
@@ -106,6 +107,7 @@ const setFriendOnline = (friendId: string, online: boolean) => {
 
 chatSwarm.on('connection', (socket: any) => {
   socket.on('error', () => { });
+  socket.setKeepAlive(true, 5000); // 5s keepalive to keep NAT hole open
   let peerId: string | null = null;
   let buf = '';
 

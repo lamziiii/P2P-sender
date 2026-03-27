@@ -59,6 +59,8 @@ else {
     myId = crypto.randomBytes(16).toString('hex');
     fs.writeFileSync(idFile, myId);
 }
+console.log(`[DEBUG] ID: ${myId}`);
+console.log(`[DEBUG] Dossier de données: ${userDataPath}`);
 // Ensure friends persist
 let friends = [];
 if (fs.existsSync(friendsFile)) {
@@ -110,7 +112,8 @@ const setFriendOnline = (friendId, online) => {
     }
 };
 chatSwarm.on('connection', (socket) => {
-    socket.on('error', () => { });
+    console.log('[DEBUG] Nouvelle connexion P2P établie sur chatSwarm');
+    socket.on('error', (err) => { console.error('[DEBUG] Erreur socket:', err); });
     let peerId = null;
     let buf = '';
     // Immediately announce ourselves so the other side knows who we are
@@ -515,6 +518,8 @@ const createWindow = () => {
     else {
         window.loadFile(path.join(__dirname, '../dist/index.html'));
     }
+    // Force l'ouverture de la console pour le debug en version build
+    window.webContents.openDevTools({ mode: 'detach' });
     // Handle focus loss
     // Commented out so the app doesn't close when clicking elsewhere
     /*
