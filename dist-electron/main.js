@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import Hyperswarm from 'hyperswarm';
 let window = null;
 let tray = null;
+let isQuitting = false;
 // Single Instance Lock
 const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
@@ -493,14 +494,20 @@ const createWindow = () => {
         show: true, // Changed to true to fix "not seeing anything" issue
         frame: false,
         resizable: false,
-        transparent: false, // Changed to false for stability on Windows
-        backgroundColor: '#f5f5f7',
+        transparent: true,
         icon: winIconPath,
         webPreferences: {
             preload: path.join(__dirname, 'preload.cjs'), // tsc builds to .cjs
             contextIsolation: true,
             nodeIntegration: false
         }
+    });
+    window.on('close', (event) => {
+        if (!isQuitting) {
+            event.preventDefault();
+            window?.hide();
+        }
+        return false;
     });
     if (process.env.VITE_DEV_SERVER_URL) {
         window.loadURL(process.env.VITE_DEV_SERVER_URL);
@@ -559,6 +566,7 @@ const createTray = () => {
     const contextMenu = Menu.buildFromTemplate([
         {
             label: 'Quit P2P Share', click: () => {
+                isQuitting = true;
                 app.quit();
             }
         }
@@ -586,7 +594,10 @@ app.on('activate', () => {
     }
 });
 app.on('window-all-closed', () => {
+    // Commented out to prevent app from quitting when windows are hidden
+    /*
     if (process.platform !== 'darwin') {
-        app.quit();
+      app.quit();
     }
+    */
 });

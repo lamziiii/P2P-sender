@@ -7,6 +7,7 @@ import Hyperswarm from 'hyperswarm';
 
 let window: BrowserWindow | null = null;
 let tray: Tray | null = null;
+let isQuitting = false;
 
 // Single Instance Lock
 const gotTheLock = app.requestSingleInstanceLock();
@@ -518,6 +519,14 @@ const createWindow = () => {
     }
   });
 
+  window.on('close', (event) => {
+    if (!isQuitting) {
+      event.preventDefault();
+      window?.hide();
+    }
+    return false;
+  });
+
   if (process.env.VITE_DEV_SERVER_URL) {
     window.loadURL(process.env.VITE_DEV_SERVER_URL);
   } else {
@@ -583,6 +592,7 @@ const createTray = () => {
   const contextMenu = Menu.buildFromTemplate([
     {
       label: 'Quit P2P Share', click: () => {
+        isQuitting = true;
         app.quit();
       }
     }
@@ -613,7 +623,10 @@ app.on('activate', () => {
 });
 
 app.on('window-all-closed', () => {
+  // Commented out to prevent app from quitting when windows are hidden
+  /*
   if (process.platform !== 'darwin') {
     app.quit();
   }
+  */
 });
