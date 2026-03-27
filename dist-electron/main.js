@@ -528,16 +528,16 @@ const createWindow = () => {
 const createTray = () => {
     const isDev = process.env.VITE_DEV_SERVER_URL !== undefined;
     const isMac = process.platform === 'darwin';
-    // macOS: use .icns for best quality; Windows/Linux: use .png
-    const iconFile = isMac ? 'icon.icns' : 'icon.png';
+    // Use .png for both platforms to ensure better compatibility with Tray/Dock
+    const iconFile = 'icon.png';
     const iconPath = path.join(__dirname, isDev ? `../public/${iconFile}` : `../dist/${iconFile}`);
     const icon = nativeImage.createFromPath(iconPath);
-    // Set the dock icon on macOS (even though dock is hidden, it's used in alt-tab etc.)
+    // Set the dock icon on macOS
     if (isMac && !icon.isEmpty()) {
         app.dock?.setIcon(icon);
     }
-    // Resize icon for system tray to prevent rendering issues on certain OS
-    const trayIcon = icon.resize({ width: 16, height: 16 });
+    // Resize icon for system tray
+    const trayIcon = icon.resize({ width: 18, height: 18 }); // 18x18 is better for Mac tray
     tray = new Tray(trayIcon);
     tray.setToolTip('P2P Share');
     tray.on('click', (_event, bounds) => {
@@ -600,4 +600,7 @@ app.on('window-all-closed', () => {
       app.quit();
     }
     */
+});
+app.on('before-quit', () => {
+    isQuitting = true;
 });
