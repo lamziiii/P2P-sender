@@ -53,14 +53,12 @@ const saveConfig = () => fs.writeFileSync(configFile, JSON.stringify(config));
 // Generate ID
 let myId = '';
 if (fs.existsSync(idFile)) {
-    myId = fs.readFileSync(idFile, 'utf8');
+    myId = fs.readFileSync(idFile, 'utf8').trim();
 }
 else {
     myId = crypto.randomBytes(16).toString('hex');
     fs.writeFileSync(idFile, myId);
 }
-console.log(`[DEBUG] ID: ${myId}`);
-console.log(`[DEBUG] Dossier de données: ${userDataPath}`);
 // Ensure friends persist
 let friends = [];
 if (fs.existsSync(friendsFile)) {
@@ -86,7 +84,7 @@ if (fs.existsSync(messagesFile)) {
 const saveMessages = () => fs.writeFileSync(messagesFile, JSON.stringify(messages));
 // --- Chat Swarm ---
 // topic = sorted(myId, friendId) so both peers join the same rendezvous point
-const getChatTopic = (a, b) => crypto.createHash('sha256').update([a, b].sort().join(':')).digest();
+const getChatTopic = (a, b) => crypto.createHash('sha256').update([a.trim(), b.trim()].sort().join(':')).digest();
 const chatSwarm = new Hyperswarm();
 const joinedChatTopics = new Set();
 const joinChatWithFriend = (friendId) => {
@@ -95,6 +93,7 @@ const joinChatWithFriend = (friendId) => {
         return;
     joinedChatTopics.add(key);
     chatSwarm.join(getChatTopic(myId, friendId), { server: true, client: true });
+    chatSwarm.flush(); // Force discovery to start immediately
 };
 // Join topics for already-known friends
 for (const f of friends)
@@ -112,8 +111,8 @@ const setFriendOnline = (friendId, online) => {
     }
 };
 chatSwarm.on('connection', (socket) => {
-    console.log('[DEBUG] Nouvelle connexion P2P établie sur chatSwarm');
-    socket.on('error', (err) => { console.error('[DEBUG] Erreur socket:', err); });
+    socket.on('error', () => { });
+    socket.setKeepAlive(true, 5000); // 5s keepalive to keep NAT hole open
     let peerId = null;
     let buf = '';
     // Immediately announce ourselves so the other side knows who we are
@@ -518,8 +517,6 @@ const createWindow = () => {
     else {
         window.loadFile(path.join(__dirname, '../dist/index.html'));
     }
-    // Force l'ouverture de la console pour le debug en version build
-    window.webContents.openDevTools({ mode: 'detach' });
     // Handle focus loss
     // Commented out so the app doesn't close when clicking elsewhere
     /*
